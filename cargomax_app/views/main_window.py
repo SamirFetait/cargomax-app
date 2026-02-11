@@ -113,13 +113,15 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu("&Help")
 
         # File actions
-        new_action = QAction("&New Loading condition ...                       CTRL+N", self)
+        new_action = QAction("&New Loading condition ...", self)
         new_action.triggered.connect(lambda: self._status_bar.showMessage("New Loading Condition"))
         file_menu.addAction(new_action)
+        new_action.setShortcut("Ctrl+N")
 
-        open_action = QAction("&Open Loading condition ...                     CTRL+O", self)
+        open_action = QAction("&Open Loading condition ...", self)
         open_action.triggered.connect(lambda: self._status_bar.showMessage("Open Loading Condition"))
         file_menu.addAction(open_action)
+        open_action.setShortcut("Ctrl+O")
 
         open_recent_action = QAction("&Open Recent Loading conditions ...", self)
         open_recent_action.triggered.connect(lambda: self._status_bar.showMessage("Open Recent Loading Conditions"))
@@ -131,9 +133,10 @@ class MainWindow(QMainWindow):
 
         file_menu.addSeparator()
 
-        save_action = QAction("&Save Loading condition ...                     CTRL+S", self)
+        save_action = QAction("&Save Loading condition ...", self)
         save_action.triggered.connect(lambda: self._status_bar.showMessage("Save Loading Condition"))
         file_menu.addAction(save_action)
+        save_action.setShortcut("Ctrl+S")
 
         save_as_action = QAction("&Save Loading condition As ...", self)
         save_as_action.triggered.connect(lambda: self._status_bar.showMessage("Save Loading Condition As"))
