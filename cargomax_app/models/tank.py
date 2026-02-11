@@ -17,8 +17,9 @@ class Tank:
     id: int | None = None
     ship_id: int | None = None
     name: str = ""
-    tank_type: TankType = TankType.CARGO
-    capacity_m3: float = 0.0
+    description: str = ""
+    volume_m3: float = 0.0
+    density_t_per_m3: float = 0.0
 
     # Simple longitudinal position for now (relative 0–1)
     longitudinal_pos: float = 0.5

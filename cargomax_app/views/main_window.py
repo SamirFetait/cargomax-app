@@ -23,7 +23,6 @@ from .ship_manager_view import ShipManagerView
 from .voyage_planner_view import VoyagePlannerView
 from .condition_editor_view import ConditionEditorView
 from .results_view import ResultsView
-from .test_view import TestView  # For development/testing purposes
 
 
 @dataclass
@@ -32,7 +31,6 @@ class _PageIndexes:
     voyage_planner: int
     condition_editor: int
     results: int
-    test: int  # For development/testing purposes
 
 
 class MainWindow(QMainWindow):
@@ -63,13 +61,11 @@ class MainWindow(QMainWindow):
         self._voyage_planner = VoyagePlannerView(self)
         self._condition_editor = ConditionEditorView(self)
         self._results_view = ResultsView(self)
-        self._test_view = TestView(self)  # For development/testing purposes
 
         ship_idx = self._stack.addWidget(self._ship_manager)
         voy_idx = self._stack.addWidget(self._voyage_planner)
         cond_idx = self._stack.addWidget(self._condition_editor)
         res_idx = self._stack.addWidget(self._results_view)
-        test_idx = self._stack.addWidget(self._test_view)
 
         # Default page
         self._stack.setCurrentIndex(ship_idx)
@@ -79,7 +75,6 @@ class MainWindow(QMainWindow):
             voyage_planner=voy_idx,
             condition_editor=cond_idx,
             results=res_idx,
-            test=test_idx,  # For development/testing purposes
         )
 
         # Wire condition editor to results view
@@ -463,7 +458,6 @@ class MainWindow(QMainWindow):
             "Loading Condition",
         )
         add_nav_button("Results", self._page_indexes.results, "Results")
-        add_nav_button("test", self._page_indexes.test, "test")  # For development/testing purposes
 
     def _switch_page(self, index: int, status_message: str) -> None:
         self._stack.setCurrentIndex(index)

@@ -63,11 +63,13 @@ class ShipManagerView(QWidget):
 
         # Tanks table
         self._tanks_table = QTableWidget(self)
-        self._tanks_table.setColumnCount(4)
+        self._tanks_table.setColumnCount(8)
         self._tanks_table.setHorizontalHeaderLabels(
-            ["Name", "Type", "Capacity (m³)", "Longitudinal Pos (0-1)"]
+            ["Name", "Description", "Volume (m³)", "Density (t/m³)", "Weight (t)", "Vsg (m)", "LCG (m)", "TCG (m)"]
         )
-        self._tanks_table.horizontalHeader().setStretchLastSection(True)
+        self._tanks_table.horizontalHeader().setStretchLastSection(False)
+        self._tanks_table.setColumnWidth(0, 200)
+        self._tanks_table.setColumnWidth(1, 400)
 
         self._tank_add_btn = QPushButton("Add Tank", self)
         self._tank_delete_btn = QPushButton("Delete Selected Tank", self)
