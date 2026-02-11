@@ -1,0 +1,29 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum, auto
+
+
+class TankType(Enum):
+    CARGO = auto()
+    BALLAST = auto()
+    FUEL = auto()
+    FRESH_WATER = auto()
+    OTHER = auto()
+
+
+@dataclass(slots=True)
+class Tank:
+    id: int | None = None
+    ship_id: int | None = None
+    name: str = ""
+    tank_type: TankType = TankType.CARGO
+    capacity_m3: float = 0.0
+
+    # Simple longitudinal position for now (relative 0–1)
+    longitudinal_pos: float = 0.5
+
+    # Simplified centers of gravity – can be refined to full 3D later
+    kg_m: float = 0.0
+    tcg_m: float = 0.0
+    lcg_m: float = 0.0
