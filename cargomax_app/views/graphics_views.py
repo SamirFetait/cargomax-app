@@ -26,4 +26,17 @@ class ShipGraphicsView(QGraphicsView):
     def reset_zoom(self) -> None:
         """Reset the view transform to 1:1."""
         self.setTransform(QTransform())
+        
+    def zoom_in(self) -> None:
+        """Zoom in by a fixed factor."""
+        self.scale(1.2, 1.2)
+        
+    def zoom_out(self) -> None:
+        """Zoom out by a fixed factor."""
+        self.scale(1.0 / 1.2, 1.0 / 1.2)
+        
+    def fit_to_view(self) -> None:
+        """Fit all items in the scene to the view."""
+        if self.scene():
+            self.fitInView(self.scene().itemsBoundingRect(), Qt.AspectRatioMode.KeepAspectRatio)
 

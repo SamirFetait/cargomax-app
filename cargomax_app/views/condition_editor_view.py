@@ -21,6 +21,7 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QPushButton,
     QMessageBox,
+    QSplitter,
 )
 
 from ..models import Ship, Voyage, LoadingCondition, Tank
@@ -32,6 +33,10 @@ from ..services.condition_service import (
     ConditionResults,
 )
 from ..services.voyage_service import VoyageService, VoyageValidationError
+from .deck_profile_widget import DeckProfileWidget
+from .results_panel import ResultsPanel
+from .condition_table_widget import ConditionTableWidget
+from .cross_section_widget import CrossSectionWidget
 
 
 class ConditionEditorView(QWidget):
@@ -62,6 +67,9 @@ class ConditionEditorView(QWidget):
             ["Tank", "Capacity (m³)", "Fill %"]
         )
         self._tank_table.horizontalHeader().setStretchLastSection(True)
+        self._tank_table.setAlternatingRowColors(True)
+        self._tank_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self._tank_table.setEditTriggers(QTableWidget.EditTrigger.DoubleClicked | QTableWidget.EditTrigger.SelectedClicked)
 
         self._pen_table = QTableWidget(self)
         self._pen_table.setColumnCount(4)
@@ -70,9 +78,27 @@ class ConditionEditorView(QWidget):
         )
         self._pen_table.horizontalHeader().setStretchLastSection(True)
         self._pen_table.setMaximumHeight(120)
+        self._pen_table.setAlternatingRowColors(True)
+        self._pen_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self._pen_table.setEditTriggers(QTableWidget.EditTrigger.DoubleClicked | QTableWidget.EditTrigger.SelectedClicked)
 
         self._compute_btn = QPushButton("Compute Results", self)
         self._save_condition_btn = QPushButton("Save Condition", self)
+
+        # Graphical deck/profile view (left side)
+        self._deck_profile_widget = DeckProfileWidget(self)
+        
+        # Cross-section widget (middle, between profile and results)
+        self._cross_section_widget = CrossSectionWidget(self)
+        
+        # Results panel (right side)
+        self._results_panel = ResultsPanel(self)
+        
+        # Tabbed table widget (bottom)
+        self._condition_table = ConditionTableWidget(self)
+        
+        # Store last computed results
+        self._last_results: Optional[ConditionResults] = None
 
         self._build_layout()
         self._connect_signals()
@@ -81,8 +107,64 @@ class ConditionEditorView(QWidget):
 
     def _build_layout(self) -> None:
         root = QVBoxLayout(self)
+        root.setContentsMargins(4, 4, 4, 4)
+        root.setSpacing(4)
+        
+        # Apply modern styling
+        self.setStyleSheet("""
+            QComboBox {
+                padding: 4px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: white;
+            }
+            QComboBox:hover {
+                border: 1px solid #999;
+            }
+            QLineEdit {
+                padding: 4px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
+            QLineEdit:focus {
+                border: 2px solid #4A90E2;
+            }
+            QPushButton {
+                padding: 6px 16px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background-color: #f0f0f0;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+            }
+            QTableWidget {
+                border: 1px solid #ddd;
+                gridline-color: #e0e0e0;
+                background-color: white;
+            }
+            QTableWidget::item {
+                padding: 4px;
+            }
+            QTableWidget::item:selected {
+                background-color: #4A90E2;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #f5f5f5;
+                padding: 6px;
+                border: 1px solid #ddd;
+                font-weight: bold;
+            }
+        """)
 
+        # Top controls
         top = QHBoxLayout()
+        top.setSpacing(4)
         top.addWidget(QLabel("Ship:", self))
         top.addWidget(self._ship_combo, 1)
         top.addWidget(QLabel("Voyage:", self))
@@ -92,18 +174,43 @@ class ConditionEditorView(QWidget):
         root.addLayout(top)
 
         name_row = QHBoxLayout()
+        name_row.setSpacing(4)
         name_row.addWidget(QLabel("Condition name:", self))
         name_row.addWidget(self._condition_name_edit, 2)
         root.addLayout(name_row)
 
-        root.addWidget(QLabel("Tank fillings", self))
-        root.addWidget(self._tank_table, 1)
-        root.addWidget(QLabel("Livestock pen loadings", self))
-        root.addWidget(self._pen_table)
+        # Main content area: left (profile+deck), middle (cross-section), right (results)
+        main_splitter = QSplitter(Qt.Orientation.Horizontal, self)
+        main_splitter.setChildrenCollapsible(False)
+        
+        # Left side: deck/profile widget
+        main_splitter.addWidget(self._deck_profile_widget)
+        
+        # Middle: cross-section widget
+        self._cross_section_widget.setMaximumWidth(250)
+        main_splitter.addWidget(self._cross_section_widget)
+        
+        # Right side: results panel
+        main_splitter.addWidget(self._results_panel)
+        
+        # Set splitter sizes
+        main_splitter.setSizes([600, 200, 300])
+        root.addWidget(main_splitter, 2)
+
+        # Bottom: tabbed table widget
+        root.addWidget(self._condition_table, 1)
+
+        # Buttons at bottom
         btn_row = QHBoxLayout()
+        btn_row.setSpacing(4)
         btn_row.addWidget(self._compute_btn)
         btn_row.addWidget(self._save_condition_btn)
+        btn_row.addStretch()
         root.addLayout(btn_row)
+        
+        # Hide legacy tables (they're still used for data but not displayed)
+        self._tank_table.hide()
+        self._pen_table.hide()
 
     def _connect_signals(self) -> None:
         self._ship_combo.currentIndexChanged.connect(self._on_ship_changed)
@@ -111,6 +218,10 @@ class ConditionEditorView(QWidget):
         self._condition_combo.currentIndexChanged.connect(self._on_condition_changed)
         self._compute_btn.clicked.connect(self._on_compute)
         self._save_condition_btn.clicked.connect(self._on_save_condition)
+        
+        # Connect table changes for real-time updates
+        self._tank_table.itemChanged.connect(self._on_tank_table_changed)
+        self._pen_table.itemChanged.connect(self._on_pen_table_changed)
 
     def _load_ships(self) -> None:
         self._ship_combo.clear()
@@ -180,6 +291,14 @@ class ConditionEditorView(QWidget):
         self._populate_tanks_table(tanks, volumes)
         pens = cond_service.get_pens_for_ship(ship.id)
         self._populate_pens_table(pens, pen_loadings)
+        
+        # Update deck tabs with pens/tanks data
+        self._deck_profile_widget.update_tables(pens, tanks)
+        
+        # Update condition table widget
+        volumes = self._current_condition.tank_volumes_m3 if self._current_condition else {}
+        pen_loads = getattr(self._current_condition, "pen_loadings", {}) or {} if self._current_condition else {}
+        self._update_condition_table(pens, tanks, pen_loads, volumes)
 
     def _populate_tanks_table(
         self, tanks: List[Tank], volumes: Dict[int, float] | None = None
@@ -271,9 +390,12 @@ class ConditionEditorView(QWidget):
                 tanks = cond_svc.get_tanks_for_ship(ship.id)
                 pens = cond_svc.get_pens_for_ship(ship.id)
             self._populate_tanks_table(tanks, condition.tank_volumes_m3)
-            self._populate_pens_table(
-                pens, getattr(condition, "pen_loadings", {}) or {}
-            )
+            pen_loads = getattr(condition, "pen_loadings", {}) or {}
+            self._populate_pens_table(pens, pen_loads)
+            # Update deck tabs
+            self._deck_profile_widget.update_tables(pens, tanks)
+            # Update condition table
+            self._update_condition_table(pens, tanks, pen_loads, condition.tank_volumes_m3)
 
     def _on_ship_changed(self, index: int) -> None:
         if index < 0 or index >= len(self._ships):
@@ -387,7 +509,31 @@ class ConditionEditorView(QWidget):
             return
 
         self._current_condition = condition
+        self._last_results = results
         voyage = self._current_voyage
+        
+        # Update results panel
+        ship_dwt = getattr(self._current_ship, "deadweight_t", 0.0) if self._current_ship else 0.0
+        self._results_panel.update_results(results, ship_dwt)
+        
+        # Update waterline visualization
+        draft_aft = getattr(results, "draft_aft_m", results.draft_m + results.trim_m / 2)
+        draft_fwd = getattr(results, "draft_fwd_m", results.draft_m - results.trim_m / 2)
+        ship_length = getattr(self._current_ship, "length_overall_m", 0.0) if self._current_ship else 0.0
+        ship_breadth = getattr(self._current_ship, "breadth_m", 0.0) if self._current_ship else 0.0
+        
+        self._deck_profile_widget.update_waterline(
+            results.draft_m, draft_aft, draft_fwd, ship_length
+        )
+        self._cross_section_widget.update_waterline(results.draft_m, ship_breadth)
+        
+        # Update condition table with current data
+        with database.SessionLocal() as db:
+            cond_service = ConditionService(db)
+            pens = cond_service.get_pens_for_ship(self._current_ship.id)
+            tanks = cond_service.get_tanks_for_ship(self._current_ship.id)
+        self._update_condition_table(pens, tanks, pen_loadings, tank_volumes)
+        
         self.condition_computed.emit(results, self._current_ship, condition, voyage)
         validation = getattr(results, "validation", None)
         if validation and getattr(validation, "has_errors", False):
@@ -477,6 +623,133 @@ class ConditionEditorView(QWidget):
 
         self._current_condition = condition
         self._load_conditions()
+        
+        # Update tables after save
+        if self._current_ship:
+            with database.SessionLocal() as db:
+                cond_service = ConditionService(db)
+                pens = cond_service.get_pens_for_ship(self._current_ship.id)
+                tanks = cond_service.get_tanks_for_ship(self._current_ship.id)
+            self._update_condition_table(pens, tanks, pen_loadings, tank_volumes)
+        
         QMessageBox.information(self, "Saved", "Condition saved.")
+        
+    def _update_condition_table(
+        self,
+        pens: list,
+        tanks: list,
+        pen_loadings: Dict[int, int],
+        tank_volumes: Dict[int, float],
+    ) -> None:
+        """Helper to update the condition table widget."""
+        self._condition_table.update_data(pens, tanks, pen_loadings, tank_volumes)
+        
+    # Public methods for toolbar access
+    def compute_condition(self) -> bool:
+        """
+        Compute the current condition. Called from toolbar.
+        
+        Returns:
+            True if computation succeeded, False otherwise
+        """
+        self._on_compute()
+        return self._last_results is not None
+        
+    def save_current_condition(self) -> bool:
+        """
+        Save the current condition. Called from toolbar.
+        
+        Returns:
+            True if save succeeded, False otherwise
+        """
+        if not self._current_voyage:
+            QMessageBox.information(
+                self, "Save", "Select a voyage first to save a condition."
+            )
+            return False
+        self._on_save_condition()
+        return self._current_condition is not None
+        
+    def new_condition(self) -> None:
+        """Create a new condition. Called from toolbar."""
+        self._current_condition = None
+        self._condition_name_edit.clear()
+        if self._current_ship:
+            self._set_current_ship(self._current_ship)
+        
+    def zoom_in_graphics(self) -> None:
+        """Zoom in on graphics views."""
+        # Zoom profile view
+        profile_view = self._deck_profile_widget._profile_view
+        profile_view.zoom_in()
+        
+        # Zoom deck view
+        current_deck = self._deck_profile_widget.get_current_deck()
+        deck_tab = self._deck_profile_widget._deck_tab_widgets.get(current_deck)
+        if deck_tab:
+            deck_tab._deck_view.zoom_in()
+            
+        # Zoom cross-section
+        self._cross_section_widget._view.zoom_in()
+        
+    def zoom_out_graphics(self) -> None:
+        """Zoom out on graphics views."""
+        # Zoom profile view
+        profile_view = self._deck_profile_widget._profile_view
+        profile_view.zoom_out()
+        
+        # Zoom deck view
+        current_deck = self._deck_profile_widget.get_current_deck()
+        deck_tab = self._deck_profile_widget._deck_tab_widgets.get(current_deck)
+        if deck_tab:
+            deck_tab._deck_view.zoom_out()
+            
+        # Zoom cross-section
+        self._cross_section_widget._view.zoom_out()
+        
+    def reset_zoom_graphics(self) -> None:
+        """Reset zoom on graphics views."""
+        # Reset profile view
+        profile_view = self._deck_profile_widget._profile_view
+        profile_view.fit_to_view()
+        
+        # Reset deck view
+        current_deck = self._deck_profile_widget.get_current_deck()
+        deck_tab = self._deck_profile_widget._deck_tab_widgets.get(current_deck)
+        if deck_tab:
+            deck_tab._deck_view.fit_to_view()
+            
+        # Reset cross-section
+        self._cross_section_widget._view.fit_to_view()
+        
+    def _on_tank_table_changed(self, item: QTableWidgetItem) -> None:
+        """Called when a tank table cell is edited."""
+        if item.column() == 2:  # Fill % column
+            try:
+                value = float(item.text())
+                if value < 0 or value > 100:
+                    # Highlight invalid values
+                    from PyQt6.QtGui import QColor
+                    item.setForeground(QColor(200, 0, 0))
+                else:
+                    from PyQt6.QtGui import QColor
+                    item.setForeground(QColor(0, 0, 0))
+            except ValueError:
+                from PyQt6.QtGui import QColor
+                item.setForeground(QColor(200, 0, 0))
+                
+    def _on_pen_table_changed(self, item: QTableWidgetItem) -> None:
+        """Called when a pen table cell is edited."""
+        if item.column() == 3:  # Head Count column
+            try:
+                value = int(float(item.text()))
+                from PyQt6.QtGui import QColor
+                if value < 0:
+                    item.setForeground(QColor(200, 0, 0))
+                else:
+                    item.setForeground(QColor(0, 0, 0))
+            except ValueError:
+                from PyQt6.QtGui import QColor
+                item.setForeground(QColor(200, 0, 0))
 
 
