@@ -724,6 +724,7 @@ class ConditionEditorView(QWidget):
             pens, tanks, pen_loadings, tank_volumes,
             cargo_type=selected_cargo,
             cargo_type_names=cargo_type_names,
+            cargo_types=self._cargo_types,
         )
         
     # Public methods for toolbar access

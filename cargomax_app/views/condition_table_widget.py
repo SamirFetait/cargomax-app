@@ -77,6 +77,9 @@ class ConditionTableWidget(QWidget):
         
         self._tabs = QTabWidget(self)
         self._table_widgets: Dict[str, QTableWidget] = {}
+        self._current_pens: List[LivestockPen] = []
+        self._current_cargo_types: List[Any] = []
+        self._skip_item_changed = False
         
         self._create_tabs()
         
@@ -203,14 +206,22 @@ class ConditionTableWidget(QWidget):
         tank_volumes: Dict[int, float],
         cargo_type: Any = None,
         cargo_type_names: Optional[List[str]] = None,
+        cargo_types: Optional[List[Any]] = None,
     ) -> None:
         """
         Update all tables with current pens and tanks data.
         If cargo_type is set, uses its avg_weight_per_head_kg and deck_area_per_head_m2 for dynamic pen calculations.
         If cargo_type_names is set, the Cargo column is a dropdown filled from the cargo library.
+        If cargo_types (full CargoType objects) is set, changing Cargo or # Head will recalculate row and totals.
         """
+        self._current_pens = pens
+        self._current_cargo_types = cargo_types or []
         # Clear all tables first
         for table in self._table_widgets.values():
+            try:
+                table.itemChanged.disconnect()
+            except Exception:
+                pass
             table.setRowCount(0)
             
         mass_per_head_t = (
@@ -232,6 +243,7 @@ class ConditionTableWidget(QWidget):
                 area_per_head_from_cargo=area_per_head_from_cargo,
                 cargo_name=cargo_name,
                 cargo_type_names=cargo_type_names,
+                cargo_types=self._current_cargo_types,
             )
             
         # Update tank category tabs
@@ -244,6 +256,7 @@ class ConditionTableWidget(QWidget):
             area_per_head_from_cargo=area_per_head_from_cargo,
             cargo_name=cargo_name,
             cargo_type_names=cargo_type_names,
+            cargo_types=self._current_cargo_types,
         )
         
     def _populate_livestock_tab(
@@ -256,8 +269,9 @@ class ConditionTableWidget(QWidget):
         area_per_head_from_cargo: Optional[float] = None,
         cargo_name: str = "Livestock",
         cargo_type_names: Optional[List[str]] = None,
+        cargo_types: Optional[List[Any]] = None,
     ) -> None:
-        """Populate a livestock deck tab with pens for that deck. Cargo column is dropdown from library if cargo_type_names provided."""
+        """Populate a livestock deck tab with pens for that deck. Cargo dropdown + dynamic recalc when Cargo or # Head changes."""
         table = self._table_widgets.get(tab_name)
         if not table:
             return
@@ -280,20 +294,27 @@ class ConditionTableWidget(QWidget):
             weight_mt = heads * mass_per_head_t
             total_weight += weight_mt
             
-            area_used = pen.area_m2 if heads > 0 else 0.0
-            total_area_used += area_used
-            total_area += pen.area_m2
-            
             head_pct = (heads / pen.capacity_head * 100.0) if pen.capacity_head > 0 else 0.0
             if area_per_head_from_cargo is not None:
                 area_per_head = area_per_head_from_cargo
             else:
                 area_per_head = pen.area_m2 / heads if heads > 0 else 0.0
+            # Used Area = # Head × Area/Head (professional: same as cargo deck area per head × heads)
+            area_used = heads * area_per_head if heads > 0 else 0.0
+            total_area_used += area_used
+            total_area += pen.area_m2
             
-            # LCG moment (simplified - would need ship length for normalization)
+            # VCG (m-BL) = pen deck level + cargo VCG from deck (matches stability calculation)
+            ct_sel = next((c for c in (cargo_types or []) if (getattr(c, "name", "") or "").strip() == cargo_name), None)
+            vcg_from_deck = (getattr(ct_sel, "vcg_from_deck_m", 0) or 0) if ct_sel else 0.0
+            vcg_display = pen.vcg_m + vcg_from_deck
+            
+            # LS Moment (m-MT) = Weight (MT) × LCG (m)
             lcg_moment = weight_mt * pen.lcg_m
             
-            table.setItem(row, 0, QTableWidgetItem(pen.name))
+            name_item = QTableWidgetItem(pen.name)
+            name_item.setData(Qt.ItemDataRole.UserRole, pen.id)
+            table.setItem(row, 0, name_item)
             if cargo_type_names:
                 combo = QComboBox(table)
                 combo.addItems(cargo_type_names)
@@ -301,21 +322,28 @@ class ConditionTableWidget(QWidget):
                     combo.setCurrentText(cargo_name)
                 elif cargo_type_names:
                     combo.setCurrentIndex(0)
+                if cargo_types:
+                    combo.currentTextChanged.connect(
+                        lambda _t, t=table, r=row: self._recalculate_livestock_row(t, r)
+                    )
                 table.setCellWidget(row, 1, combo)
             else:
                 table.setItem(row, 1, QTableWidgetItem(cargo_name))
             table.setItem(row, 2, QTableWidgetItem(str(heads)))
-            table.setItem(row, 3, QTableWidgetItem(f"{head_pct:.1f}"))
-            table.setItem(row, 4, QTableWidgetItem(str(pen.capacity_head)))
+            table.setItem(row, 3, QTableWidgetItem(f"{head_pct:.2f}"))
+            table.setItem(row, 4, QTableWidgetItem(f"{pen.capacity_head:.2f}"))
             table.setItem(row, 5, QTableWidgetItem(f"{area_used:.2f}"))
             table.setItem(row, 6, QTableWidgetItem(f"{pen.area_m2:.2f}"))
             table.setItem(row, 7, QTableWidgetItem(f"{area_per_head:.2f}"))
             table.setItem(row, 8, QTableWidgetItem(f"{mass_per_head_t:.2f}"))
             table.setItem(row, 9, QTableWidgetItem(f"{weight_mt:.2f}"))
-            table.setItem(row, 10, QTableWidgetItem(f"{pen.vcg_m:.3f}"))
+            table.setItem(row, 10, QTableWidgetItem(f"{vcg_display:.3f}"))
             table.setItem(row, 11, QTableWidgetItem(f"{pen.lcg_m:.3f}"))
             table.setItem(row, 12, QTableWidgetItem(f"{pen.tcg_m:.3f}"))
             table.setItem(row, 13, QTableWidgetItem(f"{lcg_moment:.2f}"))
+            
+        if deck_pens and cargo_types:
+            table.itemChanged.connect(self._make_livestock_item_changed(table))
             
         # Add totals row
         if deck_pens:
@@ -335,6 +363,134 @@ class ConditionTableWidget(QWidget):
             table.setItem(row, 11, QTableWidgetItem(""))
             table.setItem(row, 12, QTableWidgetItem(""))
             table.setItem(row, 13, QTableWidgetItem(""))
+    
+    def _make_livestock_item_changed(self, table: QTableWidget):
+        """Return a handler for itemChanged: recalc row when # Head (column 2) changes."""
+        def on_item(item: QTableWidgetItem) -> None:
+            if self._skip_item_changed:
+                return
+            if item.column() != 2:
+                return
+            row = item.row()
+            if row >= table.rowCount() - 1:
+                return
+            self._recalculate_livestock_row(table, row)
+        return on_item
+
+    def _make_all_tab_item_changed(self, table: QTableWidget):
+        """Return a handler for itemChanged on All tab: recalc pen rows when # Head (column 2) changes."""
+        def on_item(item: QTableWidgetItem) -> None:
+            if self._skip_item_changed:
+                return
+            if item.column() != 2:
+                return
+            row = item.row()
+            if table.cellWidget(row, 1) is not None and isinstance(table.cellWidget(row, 1), QComboBox):
+                self._recalculate_livestock_row(table, row)
+        return on_item
+    
+    def _recalculate_livestock_row(self, table: QTableWidget, row: int) -> None:
+        """Recalculate one pen row from Cargo dropdown and # Head; then refresh totals."""
+        if row >= table.rowCount() - 1:
+            return
+        name_item = table.item(row, 0)
+        pen_id = name_item.data(Qt.ItemDataRole.UserRole) if name_item else None
+        pen = next((p for p in self._current_pens if p.id == pen_id), None) if pen_id is not None else None
+        if not pen:
+            return
+        try:
+            heads = int(float((table.item(row, 2) or QTableWidgetItem("0")).text()))
+        except (TypeError, ValueError):
+            heads = 0
+        heads = max(0, heads)
+        combo = table.cellWidget(row, 1)
+        cargo_name = combo.currentText().strip() if isinstance(combo, QComboBox) else "Livestock"
+        ct = next((c for c in self._current_cargo_types if (getattr(c, "name", "") or "").strip() == cargo_name), None)
+        if ct:
+            mass_per_head_t = (getattr(ct, "avg_weight_per_head_kg", 520.0) or 520.0) / 1000.0
+            area_per_head = getattr(ct, "deck_area_per_head_m2", 1.85) or 1.85
+        else:
+            mass_per_head_t = MASS_PER_HEAD_T
+            area_per_head = pen.area_m2 / heads if heads > 0 else 0.0
+        weight_mt = heads * mass_per_head_t
+        head_pct = (heads / pen.capacity_head * 100.0) if pen.capacity_head > 0 else 0.0
+        area_used = heads * area_per_head if heads > 0 else 0.0
+        # VCG (m-BL) = pen deck + cargo VCG from deck (matches stability)
+        vcg_from_deck = (getattr(ct, "vcg_from_deck_m", 0) or 0) if ct else 0.0
+        vcg_display = pen.vcg_m + vcg_from_deck
+        # LS Moment (m-MT) = Weight × LCG
+        lcg_moment = weight_mt * pen.lcg_m
+        self._skip_item_changed = True
+        try:
+            if table.item(row, 3):
+                table.item(row, 3).setText(f"{head_pct:.2f}")
+            else:
+                table.setItem(row, 3, QTableWidgetItem(f"{head_pct:.2f}"))
+            if table.item(row, 5):
+                table.item(row, 5).setText(f"{area_used:.2f}")
+            else:
+                table.setItem(row, 5, QTableWidgetItem(f"{area_used:.2f}"))
+            if table.item(row, 7):
+                table.item(row, 7).setText(f"{area_per_head:.2f}")
+            else:
+                table.setItem(row, 7, QTableWidgetItem(f"{area_per_head:.2f}"))
+            if table.item(row, 8):
+                table.item(row, 8).setText(f"{mass_per_head_t:.2f}")
+            else:
+                table.setItem(row, 8, QTableWidgetItem(f"{mass_per_head_t:.2f}"))
+            if table.item(row, 9):
+                table.item(row, 9).setText(f"{weight_mt:.2f}")
+            else:
+                table.setItem(row, 9, QTableWidgetItem(f"{weight_mt:.2f}"))
+            if table.item(row, 10):
+                table.item(row, 10).setText(f"{vcg_display:.3f}")
+            else:
+                table.setItem(row, 10, QTableWidgetItem(f"{vcg_display:.3f}"))
+            if table.item(row, 13):
+                table.item(row, 13).setText(f"{lcg_moment:.2f}")
+            else:
+                table.setItem(row, 13, QTableWidgetItem(f"{lcg_moment:.2f}"))
+        finally:
+            self._skip_item_changed = False
+        last_row_label = (table.item(table.rowCount() - 1, 0).text() or "") if table.rowCount() else ""
+        if "Totals" in last_row_label:
+            self._refresh_livestock_totals(table)
+    
+    def _refresh_livestock_totals(self, table: QTableWidget) -> None:
+        """Refresh the totals row (last row) from data rows. Only for tables that have a Totals row (Livestock-DK)."""
+        if table.rowCount() < 2:
+            return
+        if "Totals" not in (table.item(table.rowCount() - 1, 0).text() or ""):
+            return
+        total_weight = 0.0
+        total_area_used = 0.0
+        total_area = 0.0
+        for row in range(table.rowCount() - 1):
+            w_item = table.item(row, 9)
+            a5_item = table.item(row, 5)
+            a6_item = table.item(row, 6)
+            if w_item:
+                try:
+                    total_weight += float(w_item.text())
+                except (TypeError, ValueError):
+                    pass
+            if a5_item:
+                try:
+                    total_area_used += float(a5_item.text())
+                except (TypeError, ValueError):
+                    pass
+            if a6_item:
+                try:
+                    total_area += float(a6_item.text())
+                except (TypeError, ValueError):
+                    pass
+        tot_row = table.rowCount() - 1
+        if table.item(tot_row, 5):
+            table.item(tot_row, 5).setText(f"{total_area_used:.2f}")
+        if table.item(tot_row, 6):
+            table.item(tot_row, 6).setText(f"{total_area:.2f}")
+        if table.item(tot_row, 9):
+            table.item(tot_row, 9).setText(f"{total_weight:.2f}")
             
     def _populate_tank_tabs(
         self,
@@ -408,8 +564,9 @@ class ConditionTableWidget(QWidget):
         area_per_head_from_cargo: Optional[float] = None,
         cargo_name: str = "Livestock",
         cargo_type_names: Optional[List[str]] = None,
+        cargo_types: Optional[List[Any]] = None,
     ) -> None:
-        """Populate the 'All' tab with everything. Cargo column is dropdown from library for pen rows if cargo_type_names provided."""
+        """Populate the 'All' tab with everything. Cargo dropdown + dynamic recalc for pen rows."""
         all_table = self._table_widgets.get("All")
         if not all_table:
             return
@@ -429,9 +586,15 @@ class ConditionTableWidget(QWidget):
                 area_per_head = area_per_head_from_cargo
             else:
                 area_per_head = pen.area_m2 / heads if heads > 0 else 0.0
+            area_used = heads * area_per_head if heads > 0 else 0.0
+            ct_sel = next((c for c in (cargo_types or []) if (getattr(c, "name", "") or "").strip() == cargo_name), None)
+            vcg_from_deck = (getattr(ct_sel, "vcg_from_deck_m", 0) or 0) if ct_sel else 0.0
+            vcg_display = pen.vcg_m + vcg_from_deck
             lcg_moment = weight_mt * pen.lcg_m
             
-            all_table.setItem(row, 0, QTableWidgetItem(pen.name))
+            name_item = QTableWidgetItem(pen.name)
+            name_item.setData(Qt.ItemDataRole.UserRole, pen.id)
+            all_table.setItem(row, 0, name_item)
             if cargo_type_names:
                 combo = QComboBox(all_table)
                 combo.addItems(cargo_type_names)
@@ -439,21 +602,28 @@ class ConditionTableWidget(QWidget):
                     combo.setCurrentText(cargo_name)
                 elif cargo_type_names:
                     combo.setCurrentIndex(0)
+                if cargo_types:
+                    combo.currentTextChanged.connect(
+                        lambda _t, t=all_table, r=row: self._recalculate_livestock_row(t, r)
+                    )
                 all_table.setCellWidget(row, 1, combo)
             else:
                 all_table.setItem(row, 1, QTableWidgetItem(cargo_name))
             all_table.setItem(row, 2, QTableWidgetItem(str(heads)))
-            all_table.setItem(row, 3, QTableWidgetItem(f"{head_pct:.1f}"))
-            all_table.setItem(row, 4, QTableWidgetItem(str(pen.capacity_head)))
-            all_table.setItem(row, 5, QTableWidgetItem(f"{pen.area_m2:.2f}"))
+            all_table.setItem(row, 3, QTableWidgetItem(f"{head_pct:.2f}"))
+            all_table.setItem(row, 4, QTableWidgetItem(f"{pen.capacity_head:.2f}"))
+            all_table.setItem(row, 5, QTableWidgetItem(f"{area_used:.2f}"))
             all_table.setItem(row, 6, QTableWidgetItem(f"{pen.area_m2:.2f}"))
             all_table.setItem(row, 7, QTableWidgetItem(f"{area_per_head:.2f}"))
             all_table.setItem(row, 8, QTableWidgetItem(f"{mass_per_head_t:.2f}"))
             all_table.setItem(row, 9, QTableWidgetItem(f"{weight_mt:.2f}"))
-            all_table.setItem(row, 10, QTableWidgetItem(f"{pen.vcg_m:.3f}"))
+            all_table.setItem(row, 10, QTableWidgetItem(f"{vcg_display:.3f}"))
             all_table.setItem(row, 11, QTableWidgetItem(f"{pen.lcg_m:.3f}"))
             all_table.setItem(row, 12, QTableWidgetItem(f"{pen.tcg_m:.3f}"))
             all_table.setItem(row, 13, QTableWidgetItem(f"{lcg_moment:.2f}"))
+        
+        if cargo_types:
+            all_table.itemChanged.connect(self._make_all_tab_item_changed(all_table))
             
         # Add all tanks
         for tank in tanks:
