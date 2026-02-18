@@ -79,6 +79,9 @@ class ConditionTableWidget(QWidget):
         super().__init__(parent)
         
         self._tabs = QTabWidget(self)
+        # Enable scroll buttons for tabs when they don't fit
+        self._tabs.setUsesScrollButtons(True)
+        self._tabs.setElideMode(Qt.TextElideMode.ElideRight)
         self._table_widgets: Dict[str, QTableWidget] = {}
         self._cargo_header_combos: Dict[str, QComboBox] = {}  # tab_name -> cargo header combo
         self._current_pens: List[LivestockPen] = []

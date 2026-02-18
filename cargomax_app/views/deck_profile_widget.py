@@ -452,87 +452,10 @@ class ProfileView(ShipGraphicsView):
             self._scene.removeItem(self._trim_text_item)
             self._trim_text_item = None
         
-        # Calculate waterline positions (measured from keel upward)
-        # In Qt scene coordinates, y increases downward, so we subtract from keel_y
-        if draft_aft is not None and draft_fwd is not None:
-            # Angled waterline showing trim
-            y_aft = self._keel_y - draft_aft * scale_y
-            y_fwd = self._keel_y - draft_fwd * scale_y
-            
-            # Draw waterline fill (semi-transparent blue polygon below waterline)
-            fill_path = QPainterPath()
-            fill_path.moveTo(0, y_aft)
-            fill_path.lineTo(self._ship_length, y_fwd)
-            fill_path.lineTo(self._ship_length, self._keel_y)
-            fill_path.lineTo(0, self._keel_y)
-            fill_path.closeSubpath()
-            
-            self._waterline_fill_item = self._scene.addPath(
-                fill_path,
-                QPen(Qt.PenStyle.NoPen),
-                QBrush(QColor(100, 150, 255, 60))  # Semi-transparent blue
-            )
-            self._waterline_fill_item.setZValue(50)
-            
-            # Draw waterline (blue, thick)
-            waterline_pen = QPen(QColor(0, 100, 200), 4)
-            self._waterline_item = self._scene.addLine(
-                0, y_aft, self._ship_length, y_fwd, waterline_pen
-            )
-            
-            # Add draft markers at aft, mid, and forward
-            self._add_draft_marker(0, y_aft, draft_aft, "Aft")
-            mid_x = self._ship_length / 2
-            y_mid = y_aft + (y_fwd - y_aft) * 0.5
-            self._add_draft_marker(mid_x, y_mid, draft_mid, "Mid")
-            self._add_draft_marker(self._ship_length, y_fwd, draft_fwd, "Fwd")
-            
-            # Display trim value
-            if trim_m is not None:
-                trim_str = f"Trim: {abs(trim_m):.3f}m {'A' if trim_m >= 0 else 'F'}"
-                trim_color = QColor(0, 150, 0) if abs(trim_m) < 1.0 else QColor(200, 150, 0) if abs(trim_m) < 2.0 else QColor(200, 0, 0)
-                self._trim_text_item = self._scene.addText(trim_str, QFont("Arial", 12, QFont.Weight.Bold))
-                self._trim_text_item.setDefaultTextColor(trim_color)
-                self._trim_text_item.setPos(mid_x - 50, y_mid - 30)
-                self._trim_text_item.setZValue(150)
-        else:
-            # Level waterline
-            y = self._keel_y - draft_mid * scale_y
-            
-            # Draw waterline fill
-            fill_path = QPainterPath()
-            fill_path.moveTo(0, y)
-            fill_path.lineTo(self._ship_length, y)
-            fill_path.lineTo(self._ship_length, self._keel_y)
-            fill_path.lineTo(0, self._keel_y)
-            fill_path.closeSubpath()
-            
-            self._waterline_fill_item = self._scene.addPath(
-                fill_path,
-                QPen(Qt.PenStyle.NoPen),
-                QBrush(QColor(100, 150, 255, 60))
-            )
-            self._waterline_fill_item.setZValue(50)
-            
-            # Draw waterline (blue, thick)
-            waterline_pen = QPen(QColor(0, 100, 200), 4)
-            self._waterline_item = self._scene.addLine(
-                0, y, self._ship_length, y, waterline_pen
-            )
-            
-            # Add draft marker at midship
-            mid_x = self._ship_length / 2
-            self._add_draft_marker(mid_x, y, draft_mid, "Mid")
-            
-        # Bring waterline to front
-        if self._waterline_item:
-            self._waterline_item.setZValue(100)
-        
-        # Auto-fit scene to view after updating waterline
-        self._fit_scene_to_view()
+        # Waterline visualization removed - no drawing code
     
     def _add_draft_marker(self, x: float, y: float, draft_value: float, label: str) -> None:
-        """Add a draft measurement marker with label at the specified position."""
+        """Add a draft measurement marker (no text labels)."""
         # Draw vertical line marker
         marker_pen = QPen(QColor(0, 100, 200), 2)
         marker_length = 15
@@ -550,14 +473,7 @@ class ProfileView(ShipGraphicsView):
         tick_line.setZValue(110)
         self._draft_markers.append(tick_line)
         
-        # Add text label
-        label_text = f"{label}: {draft_value:.2f}m"
-        text_item = self._scene.addText(label_text, QFont("Arial", 10))
-        text_item.setDefaultTextColor(QColor(0, 100, 200))
-        # Position label above the marker
-        text_item.setPos(x - 30, y - 25)
-        text_item.setZValue(120)
-        self._draft_markers.append(text_item)
+        # No text labels - removed per user request
 
 
 class DeckView(ShipGraphicsView):
@@ -984,8 +900,6 @@ class DeckProfileWidget(QWidget):
         ship_depth: float | None = None,
         trim_m: float | None = None,
     ) -> None:
-        """Update waterline visualization in profile view."""
-        self._profile_view.update_waterline(
-            draft_mid, draft_aft, draft_fwd, ship_length, ship_depth, trim_m
-        )
+        """Waterline visualization removed - method kept for compatibility but does nothing."""
+        pass
 

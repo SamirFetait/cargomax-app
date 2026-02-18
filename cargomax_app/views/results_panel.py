@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QFrame,
+    QSizePolicy,
 )
 
 from ..services.stability_service import ConditionResults
@@ -26,12 +27,19 @@ class StatusLabel(QLabel):
     
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setMinimumWidth(200)
+        self.setMaximumWidth(120)  # Reduced to fit within panel
+        self.setMinimumWidth(100)
         self.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        self.setWordWrap(False)
+        self.setTextFormat(Qt.TextFormat.PlainText)
         
     def set_status(self, text: str, is_ok: bool = True) -> None:
         """Set text with green (OK) or red (warning/error) color."""
-        self.setText(text)
+        # Elide text if too long to prevent overflow
+        font_metrics = self.fontMetrics()
+        elided_text = font_metrics.elidedText(text, Qt.TextElideMode.ElideRight, self.maximumWidth())
+        self.setText(elided_text)
         if is_ok:
             self.setStyleSheet("color: #27ae60; font-weight: bold;")  # Green
         else:
@@ -49,7 +57,9 @@ class ResultsPanel(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setMinimumWidth(280)
-        self.setMaximumWidth(320)
+        self.setMaximumWidth(300)  # Reduced maximum width
+        # Prevent widget from expanding beyond window
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         
         # Status labels
         self._calc_status_label = StatusLabel(self)
@@ -79,15 +89,20 @@ class ResultsPanel(QWidget):
         """Build the vertical layout with all parameter rows."""
         layout = QVBoxLayout(self)
         layout.setSpacing(4)
-        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setContentsMargins(6, 8, 6, 8)  # Reduced side margins
         
         def add_row(label_text: str, value_label: QLabel) -> None:
             """Helper to add a label-value row."""
             row = QHBoxLayout()
+            row.setSpacing(6)  # Reduced spacing
+            row.setContentsMargins(0, 0, 0, 0)  # No extra margins
             label = QLabel(label_text, self)
-            label.setMinimumWidth(140)
+            label.setMinimumWidth(130)  # Reduced minimum width
+            label.setMaximumWidth(150)  # Reduced maximum width
+            label.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+            label.setWordWrap(False)
             row.addWidget(label)
-            row.addWidget(value_label)
+            row.addWidget(value_label, 0)  # Fixed width label, no stretch
             layout.addLayout(row)
         
         # Calculation Status
@@ -219,7 +234,7 @@ class ResultsPanel(QWidget):
         self._gmt_label.set_status(gmt_str, gmt_ok)
         
         # GMt Margin (simplified - would need ship-specific limits)
-        self._gmt_margin_label.setText("Trim Not Avail m")
+        self._gmt_margin_label.setText("N/A")
         
         # Max BMom %Allow
         strength = getattr(results, "strength", None)

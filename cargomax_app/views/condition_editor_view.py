@@ -191,20 +191,21 @@ class ConditionEditorView(QWidget):
         self._condition_combo.hide()
         self._condition_name_edit.hide()
 
-        # Main content area: left (profile+deck), middle (cross-section), right (results)
+        # Main content area: left (profile+deck), right (results)
         main_splitter = QSplitter(Qt.Orientation.Horizontal, self)
         main_splitter.setChildrenCollapsible(False)
         
         # Left side: deck/profile widget
         main_splitter.addWidget(self._deck_profile_widget)
         
-        # Middle: cross-section widget
-        
         # Right side: results panel
         main_splitter.addWidget(self._results_panel)
         
-        # Set splitter sizes
-        main_splitter.setSizes([600, 200, 300])
+        # Set splitter sizes and constraints
+        main_splitter.setSizes([600, 300])
+        # Ensure results panel doesn't exceed its maximum width
+        main_splitter.setStretchFactor(0, 1)  # Left side can stretch
+        main_splitter.setStretchFactor(1, 0)  # Right side (results panel) cannot stretch
         root.addWidget(main_splitter, 2)
 
         # Bottom: tabbed table widget
@@ -639,17 +640,7 @@ class ConditionEditorView(QWidget):
         ship_dwt = getattr(self._current_ship, "deadweight_t", 0.0) if self._current_ship else 0.0
         self._results_panel.update_results(results, ship_dwt)
         
-        # Update waterline visualization
-        draft_aft = getattr(results, "draft_aft_m", results.draft_m + results.trim_m / 2)
-        draft_fwd = getattr(results, "draft_fwd_m", results.draft_m - results.trim_m / 2)
-        ship_length = getattr(self._current_ship, "length_overall_m", 0.0) if self._current_ship else 0.0
-        ship_breadth = getattr(self._current_ship, "breadth_m", 0.0) if self._current_ship else 0.0
-        ship_depth = getattr(self._current_ship, "depth_m", 0.0) if self._current_ship else 0.0
-        
-        self._deck_profile_widget.update_waterline(
-            results.draft_m, draft_aft, draft_fwd, ship_length, ship_depth, results.trim_m
-        )
-        self._cross_section_widget.update_waterline(results.draft_m, ship_breadth)
+        # Waterline visualization removed - no update needed
         
         # Update condition table with current data
         with database.SessionLocal() as db:
@@ -661,13 +652,38 @@ class ConditionEditorView(QWidget):
         self.condition_computed.emit(results, self._current_ship, condition, voyage)
         validation = getattr(results, "validation", None)
         if validation and getattr(validation, "has_errors", False):
-            QMessageBox.warning(
-                self,
-                "Computed ΓÇô FAILED",
-                "Condition computed but fails validation. Check Results tab.",
-            )
+            # Use non-blocking status message instead of blocking dialog
+            # Try to find parent MainWindow to show status message
+            parent = self.parent()
+            while parent and not hasattr(parent, '_status_bar'):
+                parent = parent.parent()
+            if parent and hasattr(parent, '_status_bar'):
+                parent._status_bar.showMessage("Computation completed - FAILED: Check Results tab for details", 5000)
+            else:
+                # Fallback to non-modal message box if no status bar found
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Warning)
+                msg.setWindowTitle("Computed – FAILED")
+                msg.setText("Condition computed but fails validation. Check Results tab.")
+                msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                msg.setModal(False)
+                msg.show()
         else:
-            QMessageBox.information(self, "Computed", "Condition results computed.")
+            # Use non-blocking status message instead of blocking dialog
+            parent = self.parent()
+            while parent and not hasattr(parent, '_status_bar'):
+                parent = parent.parent()
+            if parent and hasattr(parent, '_status_bar'):
+                parent._status_bar.showMessage("Computation completed successfully", 3000)
+            else:
+                # Fallback to non-modal message box if no status bar found
+                msg = QMessageBox(self)
+                msg.setIcon(QMessageBox.Icon.Information)
+                msg.setWindowTitle("Computed")
+                msg.setText("Condition results computed.")
+                msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                msg.setModal(False)
+                msg.show()
 
     def _on_save_condition(self) -> None:
         if not self._current_voyage or not self._current_voyage.id:
@@ -845,8 +861,6 @@ class ConditionEditorView(QWidget):
         if deck_tab:
             deck_tab._deck_view.zoom_in()
             
-        # Zoom cross-section
-        self._cross_section_widget._view.zoom_in()
         
     def zoom_out_graphics(self) -> None:
         """Zoom out on graphics views."""
@@ -860,8 +874,6 @@ class ConditionEditorView(QWidget):
         if deck_tab:
             deck_tab._deck_view.zoom_out()
             
-        # Zoom cross-section
-        self._cross_section_widget._view.zoom_out()
         
     def reset_zoom_graphics(self) -> None:
         """Reset zoom on graphics views."""
@@ -875,8 +887,6 @@ class ConditionEditorView(QWidget):
         if deck_tab:
             deck_tab._deck_view.fit_to_view()
             
-        # Reset cross-section
-        self._cross_section_widget._view.fit_to_view()
         
     def _on_tank_table_changed(self, item: QTableWidgetItem) -> None:
         """Called when a tank table cell is edited."""
