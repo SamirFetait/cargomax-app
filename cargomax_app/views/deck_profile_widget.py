@@ -2,671 +2,38 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PyQt6.QtCore import Qt, QRectF, pyqtSignal, QSize, QSignalBlocker
-from PyQt6.QtGui import QPen, QBrush, QColor, QPainterPath, QFont, QResizeEvent
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QComboBox,
     QLabel,
-    QGraphicsScene,
-    QGraphicsView,
-    QGraphicsPathItem,
-    QGraphicsItem,
     QTabWidget,
     QTableWidget,
     QTableWidgetItem,
-    QGraphicsLineItem,
-    QGraphicsRectItem,
-    QGraphicsTextItem,
-    QGraphicsPolygonItem,
 )
 
-from .graphics_views import ShipGraphicsView
+from .stl_view_widget import StlViewWidget
 from ..utils.sorting import get_pen_sort_key
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent  # -> senashipping_app
+BASE_DIR = Path(__file__).resolve().parent.parent  # -> cargomax_app
 CAD_DIR = BASE_DIR / "cads"
 
 
-def _load_dxf_into_scene(dxf_path: Path, scene: QGraphicsScene) -> bool:
-    """
-    Load basic geometry from a DXF file into the given scene.
-
-    Supports LINE, LWPOLYLINE, POLYLINE and entities inside INSERT blocks.
-
-    Returns True if something was drawn, False otherwise.
-    """
-    if not dxf_path.exists():
-        return False
-
-    try:
-        import ezdxf  # type: ignore[import]
-    except ImportError:
-        # ezdxf not installed – caller will show a placeholder instead.
-        return False
-
-    try:
-        doc = ezdxf.readfile(str(dxf_path))
-    except Exception:
-        return False
-
-    msp = doc.modelspace()
-    pen = QPen(Qt.GlobalColor.darkGray, 0)  # cosmetic pen (width 0 = hairline)
-
-    drew_anything = False
-
-    def draw_entity(e) -> None:
-        nonlocal drew_anything
-        et = e.dxftype()
-        if et == "LINE":
-            x1, y1, _ = e.dxf.start
-            x2, y2, _ = e.dxf.end
-            scene.addLine(x1, -y1, x2, -y2, pen)
-            drew_anything = True
-        elif et in ("LWPOLYLINE", "POLYLINE"):
-            try:
-                points = [(p[0], p[1]) for p in e.get_points()]  # type: ignore[attr-defined]
-            except Exception:
-                return
-            if len(points) >= 2:
-                path = QPainterPath()
-                first = True
-                for x, y in points:
-                    if first:
-                        path.moveTo(x, -y)
-                        first = False
-                    else:
-                        path.lineTo(x, -y)
-                if getattr(e, "closed", False):
-                    path.closeSubpath()
-                scene.addPath(path, pen)
-                drew_anything = True
-
-    for e in msp:
-        et = e.dxftype()
-        if et == "INSERT":
-            # Many drawings use blocks; draw the virtual entities inside.
-            try:
-                for ve in e.virtual_entities():  # type: ignore[attr-defined]
-                    draw_entity(ve)
-            except Exception:
-                continue
-        else:
-            draw_entity(e)
-
-    return drew_anything
+def _profile_stl_path() -> Path | None:
+    """Return path to ship/profile STL if it exists (ship.stl, hull.stl, profile.stl)."""
+    for name in ("ship.stl", "hull.stl", "profile.stl"):
+        p = CAD_DIR / name
+        if p.exists():
+            return p
+    return None
 
 
-def _outline_to_path(outline_xy: list) -> QPainterPath:
-    """Convert list of (x, y) to QPainterPath (y flipped for Qt)."""
-    path = QPainterPath()
-    for i, (x, y) in enumerate(outline_xy):
-        if i == 0:
-            path.moveTo(x, -y)
-        else:
-            path.lineTo(x, -y)
-    path.closeSubpath()
-    return path
-
-
-class TankPolygonItem(QGraphicsPathItem):
-    """
-    Selectable, hoverable polygon for one tank. Visual states: normal, hover, selected.
-    """
-    def __init__(self, tank_id: int, path: QPainterPath, parent: QGraphicsItem | None = None) -> None:
-        super().__init__(path, parent)
-        self._tank_id = tank_id
-        self._hover = False
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges, False)
-        self.setAcceptHoverEvents(True)
-        self.setData(0, tank_id)
-        self._update_style()
-
-    def _update_style(self) -> None:
-        if self.isSelected():
-            self.setPen(QPen(QColor(0, 100, 255), 2.5))
-            self.setBrush(QBrush(QColor(100, 160, 255, 80)))
-        elif self._hover:
-            self.setPen(QPen(QColor(80, 140, 255), 1.5))
-            self.setBrush(QBrush(QColor(200, 220, 255, 100)))
-        else:
-            self.setPen(QPen(Qt.GlobalColor.darkGray, 1))
-            self.setBrush(QBrush(QColor(220, 220, 220, 60)))
-        self.update()
-
-    def hoverEnterEvent(self, event) -> None:
-        self._hover = True
-        self._update_style()
-        super().hoverEnterEvent(event)
-
-    def hoverLeaveEvent(self, event) -> None:
-        self._hover = False
-        self._update_style()
-        super().hoverLeaveEvent(event)
-
-    def itemChange(self, change: QGraphicsItem.GraphicsItemChange, value) -> None:
-        if change == QGraphicsItem.GraphicsItemChange.ItemSelectedChange:
-            self._update_style()
-        return super().itemChange(change, value)
-
-    @property
-    def tank_id(self) -> int:
-        return self._tank_id
-
-
-class PenMarkerItem(QGraphicsRectItem):
-    """
-    Selectable, hoverable rectangle marker for a pen. Visual states: normal, hover, selected.
-    Used in profile view (LCG/VCG) and deck view (LCG/TCG).
-    """
-    def __init__(self, pen_id: int, rect: QRectF, parent: QGraphicsItem | None = None) -> None:
-        super().__init__(rect, parent)
-        self._pen_id = pen_id
-        self._hover = False
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges, False)
-        self.setAcceptHoverEvents(True)
-        self.setData(0, pen_id)
-        self._update_style()
-
-    def _update_style(self) -> None:
-        if self.isSelected():
-            self.setPen(QPen(QColor(0, 150, 255), 1.5))  # Thin blue outline when selected
-            self.setBrush(QBrush(Qt.BrushStyle.NoBrush))  # No fill, just outline
-        elif self._hover:
-            self.setPen(QPen(QColor(100, 180, 255), 1.2))  # Lighter blue on hover
-            self.setBrush(QBrush(Qt.BrushStyle.NoBrush))
-        else:
-            self.setPen(QPen(QColor(100, 100, 100), 0.8))  # Thin gray outline
-            self.setBrush(QBrush(Qt.BrushStyle.NoBrush))
-        self.update()
-
-    def hoverEnterEvent(self, event) -> None:
-        self._hover = True
-        self._update_style()
-        super().hoverEnterEvent(event)
-
-    def hoverLeaveEvent(self, event) -> None:
-        self._hover = False
-        self._update_style()
-        super().hoverLeaveEvent(event)
-
-    def itemChange(self, change: QGraphicsItem.GraphicsItemChange, value) -> None:
-        if change == QGraphicsItem.GraphicsItemChange.ItemSelectedChange:
-            self._update_style()
-        return super().itemChange(change, value)
-
-    @property
-    def pen_id(self) -> int:
-        return self._pen_id
-
-
-class ProfileView(ShipGraphicsView):
-    """
-    Top profile view with waterline.
-
-    Shows ship profile with dynamic waterline based on draft and trim.
-    Fixed view - no zoom/pan, auto-fits to window size.
-    """
-
-    # Emits the full current pen selection for this view.
-    pen_selection_changed = pyqtSignal(object)  # set[int]
-
-    def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self._scene = QGraphicsScene(self)
-        self.setScene(self._scene)
-        
-        # Set white background
-        self._scene.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
-        
-        # Enable interaction for pen selection with multi-selection
-        self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)  # Enable rubber band selection
-        self.setInteractive(True)  # Enable interaction for clickable pens
-        
-        # Store references to dynamic elements
-        self._waterline_item: QGraphicsLineItem | None = None
-        self._waterline_fill_item: QGraphicsPolygonItem | None = None
-        self._waterline_aft_item: QGraphicsLineItem | None = None
-        self._waterline_fwd_item: QGraphicsLineItem | None = None
-        self._draft_markers: list[QGraphicsItem] = []
-        self._trim_text_item: QGraphicsTextItem | None = None
-        self._hull_fill_item: QGraphicsPolygonItem | None = None  # Gray hull fill
-        self._pen_markers: dict[int, PenMarkerItem] = {}  # pen_id -> marker
-        self._current_pens: list = []
-        self._syncing_selection = False
-        
-        # Ship dimensions for scaling
-        self._ship_length: float = 0.0
-        self._ship_breadth: float = 0.0
-        self._ship_depth: float = 0.0
-        self._keel_y: float = 0.0  # Y position of keel baseline in scene coordinates
-        
-        self._load_profile()
-        self._scene.selectionChanged.connect(self._on_selection_changed)
-    
-    def _on_selection_changed(self) -> None:
-        """Emit full selected pen set (multi-selection)."""
-        if self._syncing_selection:
-            return
-        selected_pen_ids = {
-            item.pen_id for item in self._scene.selectedItems() if isinstance(item, PenMarkerItem)
-        }
-        self.pen_selection_changed.emit(set(selected_pen_ids))
-    
-    def showEvent(self, event) -> None:
-        """Fit scene when view is first shown."""
-        super().showEvent(event)
-        self._fit_scene_to_view()
-    
-    def wheelEvent(self, event) -> None:
-        """Disable zoom - do nothing."""
-        event.ignore()
-    
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        """Auto-fit scene to viewport when window is resized."""
-        super().resizeEvent(event)
-        self._fit_scene_to_view()
-    
-    def _fit_scene_to_view(self) -> None:
-        """Fit all scene items (including waterline) to the viewport."""
-        if self._scene and self._scene.items():
-            # Get bounding rect of all items including waterline
-            bounds = self._scene.itemsBoundingRect()
-            if bounds.isValid() and not bounds.isEmpty():
-                # Add padding (5% margin) for better visual appearance
-                padding = min(bounds.width(), bounds.height()) * 0.05
-                padded_bounds = bounds.adjusted(-padding, -padding, padding, padding)
-                self.fitInView(padded_bounds, Qt.AspectRatioMode.KeepAspectRatio)
-
-    def _load_profile(self) -> None:
-        """Load ship profile from DXF or show placeholder. Add gray hull fill."""
-        self._scene.clear()
-        self._waterline_item = None
-        self._waterline_fill_item = None
-        self._waterline_aft_item = None
-        self._waterline_fwd_item = None
-        self._draft_markers.clear()
-        self._trim_text_item = None
-        self._hull_fill_item = None
-        
-        dxf_path = CAD_DIR / "profile.dxf"
-        if not _load_dxf_into_scene(dxf_path, self._scene):
-            # Fallback placeholder if DXF missing or ezdxf not installed
-            # Draw a simple hull shape
-            hull_pen = QPen(QColor(50, 50, 50), 2)
-            self._scene.addLine(0, 0, 800, 0, hull_pen)  # Baseline (keel)
-            hull_rect = QRectF(50, -40, 700, 80)
-            # Draw hull outline
-            self._scene.addRect(hull_rect, QPen(QColor(30, 30, 30), 2))
-            # Add gray hull fill
-            hull_fill_brush = QBrush(QColor(200, 200, 200, 180))  # Light gray, semi-transparent
-            self._hull_fill_item = self._scene.addRect(hull_rect, QPen(Qt.PenStyle.NoPen), hull_fill_brush)
-            self._hull_fill_item.setZValue(-10)  # Behind everything
-            self._ship_length = 800.0
-            self._ship_breadth = 80.0
-            self._ship_depth = 80.0
-            self._keel_y = 0.0  # Keel is at y=0 in placeholder
-        else:
-            # Estimate dimensions from scene bounds
-            bounds = self._scene.itemsBoundingRect()
-            self._ship_length = max(bounds.width(), 100.0)
-            self._ship_breadth = max(abs(bounds.height()), 20.0)
-            self._ship_depth = self._ship_breadth
-            # Assume keel is at the bottom of the bounding box
-            self._keel_y = bounds.bottom()
-            
-            # Add gray hull fill polygon (create a polygon from the hull outline)
-            # For now, create a simple rectangle fill. Can be enhanced to match DXF hull shape later
-            hull_fill_rect = QRectF(bounds.left(), bounds.top(), bounds.width(), bounds.height())
-            hull_fill_brush = QBrush(QColor(200, 200, 200, 180))  # Light gray, semi-transparent
-            self._hull_fill_item = self._scene.addRect(hull_fill_rect, QPen(Qt.PenStyle.NoPen), hull_fill_brush)
-            self._hull_fill_item.setZValue(-10)  # Behind DXF lines and everything else
-        
-        # Fit scene to view after loading
-        self._fit_scene_to_view()
-    
-    def set_pens(self, pens: list) -> None:
-        """Update pens and draw markers in profile view."""
-        self._current_pens = pens
-        self._update_pen_markers()
-    
-    def _update_pen_markers(self) -> None:
-        """Draw pen markers as rectangles at their LCG/VCG positions, sized by area."""
-        # Clear existing markers
-        for marker in list(self._pen_markers.values()):
-            self._scene.removeItem(marker)
-        self._pen_markers.clear()
-        
-        if not self._current_pens or self._ship_length == 0:
-            return
-        
-        # Calculate scaling: assume pens are positioned relative to ship length
-        # For profile view: x = LCG, y = VCG from keel (keel_y - vcg)
-        for pen in self._current_pens:
-            if not pen.id:
-                continue
-            
-            # Position: LCG along ship, VCG from keel
-            x_center = pen.lcg_m
-            y_center = self._keel_y - pen.vcg_m  # VCG measured from keel upward
-            
-            # Size rectangle based on area
-            # Convert area (m²) to visual size: assume sqrt(area) gives a reasonable dimension
-            # Scale it appropriately for the view
-            area_m2 = pen.area_m2 or 10.0  # Default 10 m² if not set
-            # Width: proportional to sqrt(area), scaled to ship length
-            # Height: fixed small height for profile view (pens are thin vertically)
-            width = max(min(area_m2 ** 0.5 * 2.0, self._ship_length * 0.1), 5.0)  # Min 5, max 10% of ship length
-            height = max(self._ship_depth * 0.05, 3.0)  # Small fixed height, min 3
-            
-            rect = QRectF(x_center - width/2, y_center - height/2, width, height)
-            marker = PenMarkerItem(pen.id, rect)
-            marker.setZValue(100)  # Above hull fill, below waterline
-            self._pen_markers[pen.id] = marker
-            self._scene.addItem(marker)
-    
-    def highlight_pen(self, pen_id: int) -> None:
-        """Highlight a pen marker by selecting it."""
-        if pen_id in self._pen_markers:
-            marker = self._pen_markers[pen_id]
-            # Clear other selections first
-            self._scene.clearSelection()
-            marker.setSelected(True)
-            # Scroll to marker
-            self.ensureVisible(marker)
-
-    def set_selected_pens(self, pen_ids: set[int]) -> None:
-        """Programmatically select pens in this view without feedback loops."""
-        self._syncing_selection = True
-        try:
-            with QSignalBlocker(self._scene):
-                self._scene.clearSelection()
-                for pid in pen_ids or set():
-                    item = self._pen_markers.get(pid)
-                    if item:
-                        item.setSelected(True)
-        finally:
-            self._syncing_selection = False
-            
-    def update_waterline(
-        self,
-        draft_mid: float,
-        draft_aft: float | None = None,
-        draft_fwd: float | None = None,
-        ship_length: float | None = None,
-        ship_depth: float | None = None,
-        trim_m: float | None = None,
-    ) -> None:
-        """
-        Update waterline visualization based on draft values.
-        
-        Args:
-            draft_mid: Draft at midship (m)
-            draft_aft: Draft at aft (m), optional
-            draft_fwd: Draft at forward (m), optional
-            ship_length: Ship length (m), optional
-            ship_depth: Ship depth (m), optional - used for proper scaling
-            trim_m: Trim value (m, positive = stern down), optional - for display
-        """
-        if ship_length:
-            self._ship_length = ship_length
-        if ship_depth:
-            self._ship_depth = ship_depth
-            
-        if self._ship_length == 0:
-            return
-        
-        # Calculate proper scaling factor based on ship depth or use scene bounds
-        if self._ship_depth > 0:
-            # Use actual ship depth for scaling
-            scene_bounds = self._scene.itemsBoundingRect()
-            scene_depth = abs(scene_bounds.height())
-            if scene_depth > 0:
-                scale_y = scene_depth / self._ship_depth
-            else:
-                scale_y = self._ship_breadth / 10.0 if self._ship_breadth > 0 else 1.0
-        else:
-            # Fallback to estimated scaling
-            scale_y = self._ship_breadth / 10.0 if self._ship_breadth > 0 else 1.0
-        
-        # Remove old waterline elements
-        if self._waterline_item:
-            self._scene.removeItem(self._waterline_item)
-            self._waterline_item = None
-        if self._waterline_fill_item:
-            self._scene.removeItem(self._waterline_fill_item)
-            self._waterline_fill_item = None
-        if self._waterline_aft_item:
-            self._scene.removeItem(self._waterline_aft_item)
-            self._waterline_aft_item = None
-        if self._waterline_fwd_item:
-            self._scene.removeItem(self._waterline_fwd_item)
-            self._waterline_fwd_item = None
-        for marker in self._draft_markers:
-            self._scene.removeItem(marker)
-        self._draft_markers.clear()
-        if self._trim_text_item:
-            self._scene.removeItem(self._trim_text_item)
-            self._trim_text_item = None
-        
-        # Waterline visualization removed - no drawing code
-    
-    def _add_draft_marker(self, x: float, y: float, draft_value: float, label: str) -> None:
-        """Add a draft measurement marker (no text labels)."""
-        # Draw vertical line marker
-        marker_pen = QPen(QColor(0, 100, 200), 2)
-        marker_length = 15
-        marker_line = self._scene.addLine(
-            x, y - marker_length / 2, x, y + marker_length / 2, marker_pen
-        )
-        marker_line.setZValue(110)
-        self._draft_markers.append(marker_line)
-        
-        # Add horizontal tick
-        tick_length = 8
-        tick_line = self._scene.addLine(
-            x - tick_length / 2, y, x + tick_length / 2, y, marker_pen
-        )
-        tick_line.setZValue(110)
-        self._draft_markers.append(tick_line)
-        
-        # No text labels - removed per user request
-
-
-class DeckView(ShipGraphicsView):
-    """
-    Deck plan view: draws DXF or tank polygons. Tank polygons are selectable
-    with visual states (normal/hover/selected) and emit tank_selected.
-    Fixed view - no zoom/pan, auto-fits to window size.
-    """
-
-    # Kept for legacy behavior (other parts may connect).
-    tank_selected = pyqtSignal(int)
-    # Emits full selection sets from the deck scene.
-    selection_changed = pyqtSignal(object, object)  # set[int], set[int]
-
-    def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self._scene = QGraphicsScene(self)
-        self.setScene(self._scene)
-        
-        # Set white background
-        self._scene.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
-        
-        # Enable interaction for pen selection with multi-selection
-        self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)  # Enable rubber band selection
-        self.setInteractive(True)  # Enable interaction for clickable pens
-        
-        self._deck_name = ""
-        self._pen_markers: dict[int, PenMarkerItem] = {}  # pen_id -> marker
-        self._current_pens: list = []
-        self._syncing_selection = False
-        self._scene.selectionChanged.connect(self._on_selection_changed)
-    
-    def showEvent(self, event) -> None:
-        """Fit scene when view is first shown."""
-        super().showEvent(event)
-        self._fit_scene_to_view()
-    
-    def wheelEvent(self, event) -> None:
-        """Disable zoom - do nothing."""
-        event.ignore()
-    
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        """Auto-fit scene to viewport when window is resized."""
-        super().resizeEvent(event)
-        self._fit_scene_to_view()
-    
-    def _fit_scene_to_view(self) -> None:
-        """Fit all scene items to the viewport."""
-        if self._scene and self._scene.items():
-            bounds = self._scene.itemsBoundingRect()
-            if bounds.isValid() and not bounds.isEmpty():
-                # Add padding (5% margin) for better visual appearance
-                padding = min(bounds.width(), bounds.height()) * 0.05
-                padded_bounds = bounds.adjusted(-padding, -padding, padding, padding)
-                self.fitInView(padded_bounds, Qt.AspectRatioMode.KeepAspectRatio)
-
-    def _on_selection_changed(self) -> None:
-        """Emit full selected tank/pen sets (multi-selection)."""
-        if self._syncing_selection:
-            return
-        selected_tanks = {
-            item.tank_id for item in self._scene.selectedItems() if isinstance(item, TankPolygonItem)
-        }
-        selected_pens = {
-            item.pen_id for item in self._scene.selectedItems() if isinstance(item, PenMarkerItem)
-        }
-        # Legacy: emit first selected tank id if any
-        if selected_tanks:
-            self.tank_selected.emit(next(iter(selected_tanks)))
-        self.selection_changed.emit(set(selected_pens), set(selected_tanks))
-
-    def set_selected(self, pen_ids: set[int], tank_ids: set[int]) -> None:
-        """Programmatically set selection in this deck view without feedback loops."""
-        self._syncing_selection = True
-        try:
-            with QSignalBlocker(self._scene):
-                self._scene.clearSelection()
-                for pid in pen_ids or set():
-                    item = self._pen_markers.get(pid)
-                    if item:
-                        item.setSelected(True)
-                for item in self._scene.items():
-                    if isinstance(item, TankPolygonItem) and item.tank_id in (tank_ids or set()):
-                        item.setSelected(True)
-        finally:
-            self._syncing_selection = False
-
-    def load_deck(self, deck_name: str, tanks: list | None = None) -> None:
-        """
-        Load the given deck. If tanks with outline_xy for this deck are provided,
-        draw them as selectable polygons; otherwise load DXF from CAD_DIR.
-        """
-        self._deck_name = deck_name
-        self._scene.clear()
-        self._pen_markers.clear()
-
-        deck_tanks = []
-        if tanks:
-            for t in tanks:
-                deck = getattr(t, "deck_name", None) or ""
-                outline = getattr(t, "outline_xy", None)
-                if (deck or "").strip().upper() == deck_name.upper() and outline and len(outline) >= 3:
-                    deck_tanks.append(t)
-
-        if deck_tanks:
-            for tank in deck_tanks:
-                path = _outline_to_path(tank.outline_xy)
-                item = TankPolygonItem(tank.id or -1, path)
-                self._scene.addItem(item)
-        else:
-            dxf_path = CAD_DIR / f"deck_{deck_name}.dxf"
-            drew = _load_dxf_into_scene(dxf_path, self._scene)
-            if not drew:
-                self._scene.addRect(
-                    QRectF(0, 0, 600, 200),
-                    QPen(Qt.GlobalColor.darkGreen, 2),
-                    QBrush(Qt.GlobalColor.green),
-                )
-        
-        # Update pen markers for this deck
-        self._update_pen_markers()
-
-        # Fit scene to view after loading deck
-        self._fit_scene_to_view()
-    
-    def set_pens(self, pens: list) -> None:
-        """Update pens and draw markers in deck view."""
-        self._current_pens = pens
-        self._update_pen_markers()
-    
-    def _update_pen_markers(self) -> None:
-        """Draw pen markers as rectangles at their LCG/TCG positions, sized by area."""
-        # Clear existing markers
-        for marker in list(self._pen_markers.values()):
-            self._scene.removeItem(marker)
-        self._pen_markers.clear()
-        
-        if not self._current_pens or not self._deck_name:
-            return
-        
-        # Filter pens for this deck
-        from .condition_table_widget import _deck_to_letter
-        deck_letter = self._deck_name.upper()
-        deck_pens = [
-            p for p in self._current_pens
-            if _deck_to_letter(p.deck or "") == deck_letter
-        ]
-        
-        if not deck_pens:
-            return
-        
-        # Get scene bounds to estimate ship dimensions
-        bounds = self._scene.itemsBoundingRect()
-        ship_length = max(bounds.width(), 100.0)
-        ship_breadth = max(bounds.height(), 20.0)
-        
-        for pen in deck_pens:
-            if not pen.id:
-                continue
-            
-            # Position: LCG along ship, TCG from centerline
-            x_center = pen.lcg_m
-            y_center = ship_breadth / 2 + pen.tcg_m  # TCG: positive = starboard, negative = port
-            
-            # Size rectangle based on area
-            area_m2 = pen.area_m2 or 10.0
-            # For deck view: create square-ish rectangles based on area
-            size = max(area_m2 ** 0.5 * 1.5, 3.0)  # Scale sqrt(area), min 3
-            
-            rect = QRectF(x_center - size/2, y_center - size/2, size, size)
-            marker = PenMarkerItem(pen.id, rect)
-            marker.setZValue(50)  # Above DXF lines
-            self._pen_markers[pen.id] = marker
-            self._scene.addItem(marker)
-
-    def set_tanks(self, tanks: list) -> None:
-        """
-        Redraw deck using tanks that have outline_xy and deck_name matching current deck.
-        Call after load_deck when tank list changes (e.g. from condition editor).
-        """
-        if self._deck_name:
-            self.load_deck(self._deck_name, tanks)
-            # load_deck already calls _fit_scene_to_view()
-    
-    def highlight_pen(self, pen_id: int) -> None:
-        """Highlight a pen marker by selecting it."""
-        if pen_id in self._pen_markers:
-            marker = self._pen_markers[pen_id]
-            marker.setSelected(True)
-            self._scene.clearSelection()
-            marker.setSelected(True)
+def _deck_stl_path(deck_name: str) -> Path | None:
+    """Return path to deck STL if it exists (e.g. deck_A.stl)."""
+    p = CAD_DIR / f"deck_{deck_name}.stl"
+    return p if p.exists() else None
 
 
 def _fmt_val(v: float | None, decimals: int = 2) -> str:
@@ -678,8 +45,8 @@ def _fmt_val(v: float | None, decimals: int = 2) -> str:
 
 class DeckTabWidget(QWidget):
     """
-    Widget for a single deck tab: shows deck plan + deck table matching reference.
-    Table: Pens no. | Area A,B,C,D | LCG | VCG | TCG A,B,C,D | TOTAL row.
+    Widget for a single deck tab: shows deck plan (3D STL when available, else 2D DXF)
+    + deck table matching reference.
     """
 
     def __init__(self, deck_name: str, parent: QWidget | None = None) -> None:
@@ -689,10 +56,12 @@ class DeckTabWidget(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # Left: deck plan drawing
-        self._deck_view = DeckView(self)
-        self._deck_view.load_deck(deck_name)
-        layout.addWidget(self._deck_view, 2)
+        # Left: 3D STL only (no 2D drawings)
+        self._deck_stl_view = StlViewWidget(self)
+        _deck_stl = _deck_stl_path(deck_name)
+        if _deck_stl is not None:
+            self._deck_stl_view.load_stl(_deck_stl)
+        layout.addWidget(self._deck_stl_view, 2)
 
         # Right: deck table (title + table)
         right = QVBoxLayout()
@@ -717,8 +86,7 @@ class DeckTabWidget(QWidget):
         # layout.addLayout(right, 1)
 
     def update_table(self, pens: list, tanks: list) -> None:
-        """Update the table and deck view (tank polygons when outline_xy present)."""
-        self._deck_view.set_tanks(tanks)
+        """Update deck tab data (no 2D view to update)."""
         deck_pens = [
             p for p in pens
             if (getattr(p, "deck", None) or "").strip().upper() == self._deck_name.upper()
@@ -818,11 +186,14 @@ class DeckProfileWidget(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # Top: profile view — fixed proportion (~65% height), not resizable
-        self._profile_view = ProfileView(self)
-        main_layout.addWidget(self._profile_view, 55)
+        # Top: 3D STL only (no 2D drawings)
+        self._profile_stl_view = StlViewWidget(self)
+        _stl_path = _profile_stl_path()
+        if _stl_path is not None:
+            self._profile_stl_view.load_stl(_stl_path)
+        main_layout.addWidget(self._profile_stl_view, 55)
 
-        # Bottom: deck tabs (plan/tank view) — fixed proportion (~35% height), not resizable
+        # Bottom: deck tabs — 3D STL only per deck (no 2D drawings)
         self._deck_tabs = QTabWidget(self)
         self._deck_tab_widgets: dict[str, DeckTabWidget] = {}
 
@@ -830,11 +201,6 @@ class DeckProfileWidget(QWidget):
             tab_widget = DeckTabWidget(deck_letter, self)
             self._deck_tab_widgets[deck_letter] = tab_widget
             self._deck_tabs.addTab(tab_widget, f"Deck {deck_letter}")
-            tab_widget._deck_view.tank_selected.connect(self.tank_selected.emit)
-            tab_widget._deck_view.selection_changed.connect(self._on_deck_view_selection_changed)
-        
-        # Connect profile view pen selection
-        self._profile_view.pen_selection_changed.connect(self._on_profile_selection_changed)
 
         self._syncing_selection = False
 
@@ -852,40 +218,17 @@ class DeckProfileWidget(QWidget):
                 self.deck_changed.emit(deck_name)
 
     def update_tables(self, pens: list, tanks: list) -> None:
-        """Update all deck tab tables with current pens/tanks data."""
-        # Update pens in profile and deck views
-        self._profile_view.set_pens(pens)
+        """Update deck tab data (selection is from table only now; no 2D drawings)."""
         for tab_widget in self._deck_tab_widgets.values():
             tab_widget.update_table(pens, tanks)
-            tab_widget._deck_view.set_pens(pens)
-
-    def _on_profile_selection_changed(self, pen_ids: set[int]) -> None:
-        if self._syncing_selection:
-            return
-        self.selection_changed.emit(set(pen_ids), None)
-
-    def _on_deck_view_selection_changed(self, pen_ids: set[int], tank_ids: set[int]) -> None:
-        if self._syncing_selection:
-            return
-        self.selection_changed.emit(set(pen_ids), set(tank_ids))
 
     def set_selected(self, pen_ids: set[int], tank_ids: set[int]) -> None:
-        """Programmatically set selection in profile + all deck views."""
-        self._syncing_selection = True
-        try:
-            self._profile_view.set_selected_pens(pen_ids)
-            for tab_widget in self._deck_tab_widgets.values():
-                tab_widget._deck_view.set_selected(pen_ids, tank_ids)
-        finally:
-            self._syncing_selection = False
-    
+        """No-op: selection is from condition table only (no 2D profile/deck view)."""
+        pass
+
     def highlight_pen(self, pen_id: int) -> None:
-        """Highlight a pen in profile view and deck view."""
-        self._profile_view.highlight_pen(pen_id)
-        # Also highlight in current deck view
-        current_tab = self._deck_tabs.currentWidget()
-        if isinstance(current_tab, DeckTabWidget):
-            current_tab._deck_view.highlight_pen(pen_id)
+        """No-op: no 2D profile/deck view to highlight."""
+        pass
 
     def get_current_deck(self) -> str:
         """Return the currently selected deck letter."""

@@ -850,42 +850,28 @@ class ConditionEditorView(QWidget):
             self._set_current_ship(self._current_ship)
         
     def zoom_in_graphics(self) -> None:
-        """Zoom in on graphics views."""
-        # Zoom profile view
-        profile_view = self._deck_profile_widget._profile_view
-        profile_view.zoom_in()
-        
-        # Zoom deck view
+        """Zoom in on 3D STL views."""
+        self._deck_profile_widget._profile_stl_view.zoom_in()
         current_deck = self._deck_profile_widget.get_current_deck()
         deck_tab = self._deck_profile_widget._deck_tab_widgets.get(current_deck)
         if deck_tab:
-            deck_tab._deck_view.zoom_in()
-            
-        
+            deck_tab._deck_stl_view.zoom_in()
+
     def zoom_out_graphics(self) -> None:
-        """Zoom out on graphics views."""
-        # Zoom profile view
-        profile_view = self._deck_profile_widget._profile_view
-        profile_view.zoom_out()
-        
-        # Zoom deck view
+        """Zoom out on 3D STL views."""
+        self._deck_profile_widget._profile_stl_view.zoom_out()
         current_deck = self._deck_profile_widget.get_current_deck()
         deck_tab = self._deck_profile_widget._deck_tab_widgets.get(current_deck)
         if deck_tab:
-            deck_tab._deck_view.zoom_out()
-            
-        
+            deck_tab._deck_stl_view.zoom_out()
+
     def reset_zoom_graphics(self) -> None:
-        """Reset zoom on graphics views."""
-        # Reset profile view
-        profile_view = self._deck_profile_widget._profile_view
-        profile_view.fit_to_view()
-        
-        # Reset deck view
+        """Reset zoom on 3D STL views."""
+        self._deck_profile_widget._profile_stl_view.fit_to_view()
         current_deck = self._deck_profile_widget.get_current_deck()
         deck_tab = self._deck_profile_widget._deck_tab_widgets.get(current_deck)
         if deck_tab:
-            deck_tab._deck_view.fit_to_view()
+            deck_tab._deck_stl_view.fit_to_view()
             
         
     def _on_tank_table_changed(self, item: QTableWidgetItem) -> None:

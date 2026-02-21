@@ -5,7 +5,7 @@ These are pure Python/domain classes, separate from ORM mappings.
 """
 
 from .ship import Ship
-from .tank import Tank, TankType
+from .tank import Tank, TankType, polygon_centroid_2d, update_tank_centroid_from_polygon
 from .cargo import Cargo
 from .voyage import Voyage, LoadingCondition
 from .livestock_pen import LivestockPen
@@ -15,6 +15,8 @@ __all__ = [
     "Ship",
     "Tank",
     "TankType",
+    "polygon_centroid_2d",
+    "update_tank_centroid_from_polygon",
     "Cargo",
     "Voyage",
     "LoadingCondition",

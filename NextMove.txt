@@ -56,3 +56,33 @@ Structure: Add chapter-based modules that wrap or call these calculators and mir
 API: Add StabilityAPI (or single facade) that uses the calculators and chapter modules and is the sole entry point for CLI/GUI/simulation.
 Tests: Add/expand unit tests for each calculator and for the API with fixed inputs and expected GM/KG/KM/GZ.
 If you tell me which part you want to do first (e.g. “hydrostatic table model + HydrostaticCalculator” or “StabilityAPI facade”), I can outline concrete classes and function signatures and where to put them in your repo.
+
+1. Dependencies (requirements.txt)
+pyvista (≥0.43) and pyvistaqt (≥0.11) added for 3D STL display.
+
+2. 3D STL widget (cargomax_app/views/stl_view_widget.py)
+StlViewWidget – Qt widget that shows STL(s) in an interactive 3D view (rotate/pan/zoom via PyVistaQt).
+stl_view_available() – Returns whether pyvista/pyvistaqt are available.
+If pyvista/pyvistaqt are missing, the widget shows a short message instead of crashing.
+
+3. Profile view (top) – STL instead of DXF when possible
+The top “profile” area uses a stacked layout:
+If cads/ship.stl, cads/hull.stl, or cads/profile.stl exists and the 3D view is available → that STL is shown in 3D.
+Otherwise → the existing 2D DXF/placeholder profile is shown.
+
+4. Deck tabs (bottom) – STL instead of DXF when possible
+Each deck tab (A–H) also uses a stacked layout:
+If cads/deck_A.stl (or deck_B.stl, …, deck_H.stl) exists and the 3D view is available → that deck STL is shown in 3D.
+Otherwise → the existing 2D DXF/placeholder deck view is shown.
+
+5. Where to put STL files
+Use the cads folder next to the app package (e.g. cargomax_app/cads/):
+File	Purpose
+ship.stl or hull.stl or profile.stl	Ship profile (top 3D view)
+deck_A.stl … deck_H.stl	Deck plans (3D in each deck tab)
+Create the folder if it doesn’t exist:
+cargomax_app/  cads/    ship.stl      # or hull.stl / profile.stl for main view    deck_A.stl    # optional per deck    deck_B.stl    ...
+
+6. Run after installing deps
+pip install pyvista pyvistaqt
+If pyvistaqt doesn’t work with PyQt6 on your setup (it officially supports PyQt5/PySide6), you’ll see the placeholder text in the 3D area; in that case we can switch to another 3D backend or a different integration.

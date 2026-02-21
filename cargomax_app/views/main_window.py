@@ -341,11 +341,11 @@ class MainWindow(QMainWindow):
         cargo_lib_action.triggered.connect(self._on_cargo_library)
         tools_menu.addAction(cargo_lib_action)
 
-        # Import DXF polygons as tank objects (outline + deck; then selectable in deck view)
-        import_dxf_action = QAction("Import tanks from DXF...", self)
-        import_dxf_action.setToolTip("Convert DXF polygons to tanks for this ship")
-        import_dxf_action.triggered.connect(self._on_import_tanks_from_dxf)
-        tools_menu.addAction(import_dxf_action)
+        # Import STL meshes as tank objects (volume and LCG, VCG, TCG from mesh)
+        import_stl_action = QAction("Import tanks from STL...", self)
+        import_stl_action.setToolTip("Load STL file(s) and create tanks with volume and LCG/VCG/TCG from mesh")
+        import_stl_action.triggered.connect(self._on_import_tanks_from_stl)
+        tools_menu.addAction(import_stl_action)
 
         # Remaining items
         items = [
@@ -648,8 +648,8 @@ class MainWindow(QMainWindow):
             if hasattr(cond_editor, '_condition_table') and hasattr(cond_editor._condition_table, 'update_cargo_types'):
                 cond_editor._condition_table.update_cargo_types(cond_editor._cargo_types)
 
-    def _on_import_tanks_from_dxf(self) -> None:
-        """Import DXF polygons as tank objects for the current ship."""
+    def _on_import_tanks_from_stl(self) -> None:
+        """Import STL mesh(es) as tank objects; volume and LCG, VCG, TCG from mesh."""
         cond_editor = self._stack.widget(self._page_indexes.condition_editor)
         if not isinstance(cond_editor, ConditionEditorView):
             self._status_bar.showMessage("Switch to Loading Condition first")
@@ -658,23 +658,23 @@ class MainWindow(QMainWindow):
         if not ship or not getattr(ship, "id", None):
             QMessageBox.information(
                 self,
-                "Import tanks from DXF",
+                "Import tanks from STL",
                 "Select a ship first (Tools → Ship & data setup).",
             )
             return
         file_path, _ = QFileDialog.getOpenFileName(
             self,
-            "Select DXF file",
+            "Select STL file",
             str(Path.home()),
-            "DXF (*.dxf);;All (*)",
+            "STL (*.stl);;All (*)",
         )
         if not file_path:
             return
         from PyQt6.QtWidgets import QInputDialog
         deck_name, ok = QInputDialog.getItem(
             self,
-            "Import tanks from DXF",
-            "Deck name (for tank polygons):",
+            "Import tanks from STL",
+            "Deck name (for tank grouping):",
             ["A", "B", "C", "D", "E", "F", "G", "H"],
             0,
             False,
@@ -682,12 +682,19 @@ class MainWindow(QMainWindow):
         if not ok:
             return
         try:
-            from ..services.dxf_tank_parser import create_tanks_from_dxf
+            from ..services.stl_mesh_service import create_tanks_from_stl, TRIMESH_AVAILABLE
+            if not TRIMESH_AVAILABLE:
+                QMessageBox.critical(
+                    self,
+                    "Import tanks from STL",
+                    "trimesh is required. Install with: pip install trimesh",
+                )
+                return
             from ..repositories import database
             from ..repositories.tank_repository import TankRepository
             with database.SessionLocal() as db:
                 tank_repo = TankRepository(db)
-                created = create_tanks_from_dxf(
+                created = create_tanks_from_stl(
                     Path(file_path),
                     ship.id,
                     deck_name,
@@ -696,15 +703,15 @@ class MainWindow(QMainWindow):
             cond_editor._set_current_ship(ship)
             QMessageBox.information(
                 self,
-                "Import tanks from DXF",
-                f"Created {len(created)} tank(s). They appear on deck view when you have outline data.",
+                "Import tanks from STL",
+                f"Created {len(created)} tank(s) with volume and LCG/VCG/TCG from mesh.",
             )
-            self._status_bar.showMessage(f"Imported {len(created)} tanks from DXF")
+            self._status_bar.showMessage(f"Imported {len(created)} tanks from STL")
         except Exception as e:
             QMessageBox.critical(
                 self,
                 "Import Error",
-                f"Failed to import DXF:\n{str(e)}",
+                f"Failed to import STL:\n{str(e)}",
             )
 
     def _on_new_condition(self) -> None:
