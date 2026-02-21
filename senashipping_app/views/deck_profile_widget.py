@@ -17,7 +17,7 @@ from .stl_view_widget import StlViewWidget
 from ..utils.sorting import get_pen_sort_key
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent  # -> cargomax_app
+BASE_DIR = Path(__file__).resolve().parent.parent  # -> senashipping_app
 CAD_DIR = BASE_DIR / "cads"
 
 
@@ -45,32 +45,24 @@ def _fmt_val(v: float | None, decimals: int = 2) -> str:
 
 class DeckTabWidget(QWidget):
     """
-    Widget for a single deck tab: shows deck plan (3D STL when available, else 2D DXF)
-    + deck table matching reference.
+    Widget for a single deck tab: deck table (title + table) only.
+    The 3D deck STL is shown in a single shared view in DeckProfileWidget to avoid
+    multiple VTK render windows on Windows (wglMakeCurrent code 2004).
     """
 
     def __init__(self, deck_name: str, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._deck_name = deck_name
 
-        layout = QHBoxLayout(self)
+        layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # Left: 3D STL only (no 2D drawings)
-        self._deck_stl_view = StlViewWidget(self)
-        _deck_stl = _deck_stl_path(deck_name)
-        if _deck_stl is not None:
-            self._deck_stl_view.load_stl(_deck_stl)
-        layout.addWidget(self._deck_stl_view, 2)
-
-        # Right: deck table (title + table)
-        right = QVBoxLayout()
-        right.setContentsMargins(0, 0, 0, 0)
         self._title_label = QLabel(self)
         self._title_label.setStyleSheet("font-weight: bold; font-size: 11px;")
-        right.addWidget(self._title_label)
+        layout.addWidget(self._title_label)
 
         self._table = QTableWidget(self)
+        layout.addWidget(self._table, 1)
         # self._table.setColumnCount(12)
         # self._table.setHorizontalHeaderLabels([
         #     "Pens no.",
@@ -193,7 +185,14 @@ class DeckProfileWidget(QWidget):
             self._profile_stl_view.load_stl(_stl_path)
         main_layout.addWidget(self._profile_stl_view, 55)
 
-        # Bottom: deck tabs — 3D STL only per deck (no 2D drawings)
+        # Single shared 3D view for deck STL (avoids multiple VTK render windows → wglMakeCurrent 2004 on Windows)
+        self._deck_stl_view = StlViewWidget(self)
+        _deck_a_stl = _deck_stl_path("A")
+        if _deck_a_stl is not None:
+            self._deck_stl_view.load_stl(_deck_a_stl)
+        main_layout.addWidget(self._deck_stl_view, 25)
+
+        # Deck tabs: table-only content per deck; STL for current deck is shown in _deck_stl_view above
         self._deck_tabs = QTabWidget(self)
         self._deck_tab_widgets: dict[str, DeckTabWidget] = {}
 
@@ -204,17 +203,22 @@ class DeckProfileWidget(QWidget):
 
         self._syncing_selection = False
 
-        main_layout.addWidget(self._deck_tabs, 45)
+        main_layout.addWidget(self._deck_tabs, 20)
 
-        # Wire tab changes
+        # Wire tab changes: update shared deck 3D view and emit deck_changed
         self._deck_tabs.currentChanged.connect(self._on_tab_changed)
 
     def _on_tab_changed(self, index: int) -> None:
-        """Called when user switches to a different deck tab."""
+        """Called when user switches to a different deck tab. Updates shared deck STL view."""
         if 0 <= index < self._deck_tabs.count():
             tab_widget = self._deck_tabs.widget(index)
             if isinstance(tab_widget, DeckTabWidget):
                 deck_name = tab_widget._deck_name
+                deck_stl = _deck_stl_path(deck_name)
+                if deck_stl is not None:
+                    self._deck_stl_view.load_stl(deck_stl)
+                else:
+                    self._deck_stl_view.clear()
                 self.deck_changed.emit(deck_name)
 
     def update_tables(self, pens: list, tanks: list) -> None:

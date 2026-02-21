@@ -7,6 +7,7 @@ Used instead of 2D DXF for profile and deck drawings.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import List, Optional
 
@@ -29,6 +30,16 @@ try:
     import pyvista as pv
     from pyvistaqt import QtInteractor
     PYVISTA_AVAILABLE = True
+    # Reduce VTK/WGL log spam on Windows (e.g. wglMakeCurrent code 2004)
+    try:
+        import vtk
+        vtk.vtkObject.GlobalWarningDisplayOff()
+        # Suppress VTK error/warning output to console (wglMakeCurrent etc.)
+        _vtk_silent = vtk.vtkFileOutputWindow()
+        _vtk_silent.SetFileName(os.devnull)
+        vtk.vtkOutputWindow.SetInstance(_vtk_silent)
+    except Exception:
+        pass
 except ImportError:
     pass
 

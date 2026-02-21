@@ -60,7 +60,7 @@ If you tell me which part you want to do first (e.g. “hydrostatic table model 
 1. Dependencies (requirements.txt)
 pyvista (≥0.43) and pyvistaqt (≥0.11) added for 3D STL display.
 
-2. 3D STL widget (cargomax_app/views/stl_view_widget.py)
+2. 3D STL widget (senashipping_app/views/stl_view_widget.py)
 StlViewWidget – Qt widget that shows STL(s) in an interactive 3D view (rotate/pan/zoom via PyVistaQt).
 stl_view_available() – Returns whether pyvista/pyvistaqt are available.
 If pyvista/pyvistaqt are missing, the widget shows a short message instead of crashing.
@@ -76,12 +76,12 @@ If cads/deck_A.stl (or deck_B.stl, …, deck_H.stl) exists and the 3D view is av
 Otherwise → the existing 2D DXF/placeholder deck view is shown.
 
 5. Where to put STL files
-Use the cads folder next to the app package (e.g. cargomax_app/cads/):
+Use the cads folder next to the app package (e.g. senashipping_app/cads/):
 File	Purpose
 ship.stl or hull.stl or profile.stl	Ship profile (top 3D view)
 deck_A.stl … deck_H.stl	Deck plans (3D in each deck tab)
 Create the folder if it doesn’t exist:
-cargomax_app/  cads/    ship.stl      # or hull.stl / profile.stl for main view    deck_A.stl    # optional per deck    deck_B.stl    ...
+senashipping_app/  cads/    ship.stl      # or hull.stl / profile.stl for main view    deck_A.stl    # optional per deck    deck_B.stl    ...
 
 6. Run after installing deps
 pip install pyvista pyvistaqt

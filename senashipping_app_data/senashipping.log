@@ -212,3 +212,352 @@
 2026-02-21 13:52:54,479 [INFO] cargomax_app.config.settings - Logging initialized. DB at E:\Python\Sena\cargomax-app\senashipping_app_data\senashipping.db
 2026-02-21 14:05:46,343 [INFO] cargomax_app.config.settings - Logging initialized. DB at E:\Python\Sena\cargomax-app\senashipping_app_data\senashipping.db
 2026-02-21 14:10:22,015 [INFO] cargomax_app.config.settings - Logging initialized. DB at E:\Python\Sena\cargomax-app\senashipping_app_data\senashipping.db
+2026-02-21 14:27:52,999 [INFO] senashipping_app.config.settings - Logging initialized. DB at E:\Python\Sena\senashipping_app\senashipping_app_data\senashipping.db
+2026-02-21 14:28:20,513 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,513 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,515 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,515 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,515 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,516 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,516 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,517 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,517 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,517 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,518 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,518 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,519 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,519 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,520 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,520 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,521 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,521 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,521 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,522 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,522 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,570 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,571 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,572 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,573 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,573 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,573 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,574 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,574 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,575 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,575 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,575 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,576 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,576 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,576 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,577 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,577 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA2F00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,583 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,583 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,584 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,584 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,584 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,585 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,585 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,586 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,586 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,587 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,587 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,587 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,588 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,588 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,588 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,589 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,589 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA5B40): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,592 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,592 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,593 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,593 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,593 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,593 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,594 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,594 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,594 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,595 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,595 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,595 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,596 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,596 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,596 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,597 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,597 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA6650): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,601 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,602 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,602 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,602 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,603 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,603 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,604 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,605 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,605 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,606 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,606 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,606 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,607 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,607 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,607 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,608 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,608 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA4C80): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,612 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,612 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,612 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,613 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,613 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,614 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,614 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,614 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,614 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,615 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,615 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,615 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,616 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,616 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,616 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,617 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,617 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA32B0): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,621 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,621 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,622 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,622 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,622 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,623 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,623 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,623 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,624 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,624 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,624 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,625 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,625 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,625 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,626 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,626 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,626 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA3DC0): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,630 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,630 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,631 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,631 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,631 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,632 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,632 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,632 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,633 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,633 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,633 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,634 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,634 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,634 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,635 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,635 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,635 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA3660): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,638 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,638 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,639 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,639 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,639 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,640 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,640 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,640 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,641 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,641 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,641 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,642 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,642 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,642 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,642 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,643 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,643 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071BA6A00): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:28:20,647 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,647 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,647 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,648 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,648 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,648 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,649 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,649 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,649 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,650 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,650 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,650 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,654 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,656 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,658 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,659 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 254
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in MakeCurrent(), error: The requested transformation operation is not supported.(code 2004)
+2026-02-21 14:28:20,660 [WARNING] root - ERROR: In vtkWin32OpenGLRenderWindow.cxx, line 95
+vtkWin32OpenGLRenderWindow (0000026071B9FF10): wglMakeCurrent failed in Clean(), error: 2004
+2026-02-21 14:31:50,353 [INFO] senashipping_app.config.settings - Logging initialized. DB at E:\Python\Sena\senashipping_app\senashipping_app_data\senashipping.db
+2026-02-21 14:34:22,058 [INFO] senashipping_app.config.settings - Logging initialized. DB at E:\Python\Sena\senashipping_app\senashipping_app_data\senashipping.db

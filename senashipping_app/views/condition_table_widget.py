@@ -66,7 +66,7 @@ def _deck_to_letter(deck: str) -> Optional[str]:
 
 class ConditionTableWidget(QWidget):
     """
-    Tabbed table widget showing livestock pens and tanks by category (CargoMax-style).
+    Tabbed table widget showing livestock pens and tanks by category (SenaShipping-style).
     
     Tabs: Livestock-DK1..DK8, Water Ballast, Fresh Water, Heavy Fuel Oil, Diesel Oil,
     Lube Oil, Misc. Tanks, Dung, Fodder Hold, Spaces, All, Selected.
@@ -100,7 +100,7 @@ class ConditionTableWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._tabs)
         
-        # Bottom bar: totals label + Add button (like CargoMax reference)
+        # Bottom bar: totals label + Add button (like SenaShipping reference)
         bottom = QHBoxLayout()
         self._totals_label = QLabel("Totals", self)
         self._totals_label.setStyleSheet("color: #555; font-weight: bold;")
